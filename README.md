@@ -20,6 +20,8 @@
 
 **Demo (96s):** https://youtu.be/haSBhd5yaK0 · **Live:** https://mandate-three-pi.vercel.app · **Judging guide:** [SUBMISSION.md](SUBMISSION.md)
 
+**Reusable building blocks:** [Makabeez/mandate-kit](https://github.com/Makabeez/mandate-kit) has just the contracts, the client helpers and the Circle Agent Wallet signer, with a one-command local demo.
+
 ## Try it
 
 ```bash

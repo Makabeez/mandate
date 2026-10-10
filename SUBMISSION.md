@@ -18,6 +18,7 @@ A company can't hand its treasury to an AI agent, because the agent's limits liv
 | Reproduce in one command | `make judge-demo` (no wallet, no RPC, no key, under 60s) |
 | Video (96s) | https://youtu.be/haSBhd5yaK0 : the live dashboard, Circle's flag on the vault, a decision record checked against its on-chain hash, the blocked attack decoded on the Arc explorer, the agent's own withdrawal, the test results |
 | Agent's signer | Circle Agent Wallet `0xbA2fBb82…E5cB`, locked by a Circle contract allowlist to the mandate account; policy changes need an email code. Live since Oct 9 |
+| Standalone kit (Arc OSS) | https://github.com/Makabeez/mandate-kit : the contracts as deployed, client helpers (build, preflight, send, read the outcome), the Circle Agent Wallet signer, `make demo` on anvil |
 | Contracts verified | All four (factory, mandate, both price readers) on the Arc explorer, via Sourcify, exact match: the breach tx's log decodes as `Breach(reason, target, selector)` |
 
 ## What happens in a cycle

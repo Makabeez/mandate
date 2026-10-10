@@ -1,0 +1,74 @@
+{
+  "recordedAt": "2026-10-10T15:22:01Z",
+  "network": {
+    "name": "Arc Testnet",
+    "chainId": 5042002,
+    "rpc": "https://rpc.testnet.arc.network"
+  },
+  "deployment": {
+    "aomiBackendCommit": "a11808c72ddab1f419e9f0d993bc395b656f415c",
+    "aomiBackendImage": "ghcr.io/aomi-labs/product-mono/backend@sha256:d772b308d90c6c52a23c6f435058ac19d67a7ab7c7994de6969f67cdd185faf6",
+    "arcCanteenCommit": "03a0ceec2a5eb780fab34fbaa5876dc1b343e819"
+  },
+  "actors": {
+    "circleWallet": "0x0313f83435714e047d6132bacec1176fad994efd",
+    "gatewayPayer": "0xa7f4872965313256d4b10c1422e50a2a7ff04d19",
+    "mandateAccount": "0x88103dA28Eafac390beC8fe81b3641752Bf64DA0",
+    "vault": "0x5E55202Db7b94BE3193EC8fF2f19afac27258266"
+  },
+  "task": {
+    "idempotencyKey": "ecc5f4ac-2b27-4d83-8e4a-68493b3fb733",
+    "quoteId": "f1e584a7-1940-447c-8e6c-3fd4b56099b2",
+    "requestHash": "f00cca151802dda675b43283a6ff236b4caf584653cac5f2807d4ae4b37c05fc",
+    "artifactHash": "7d24a077cd5d12191d958ec54fa38f084f045eaf635f1f3e7350c52b008f5149",
+    "buildDigest": "sha256:d37981c522f1e631e6a58b0481f2497dff32d9a90a70a0437e28521bfba82d02",
+    "authorizationIdentity": "eip1271:d09e34b2e51f09092e73e3ba1d520a42972496bf2a3bfdb22bb50b9729a9fd66",
+    "simulationScope": "inner_calls_only",
+    "callCount": 2
+  },
+  "payment": {
+    "success": true,
+    "network": "eip155:5042002",
+    "payer": "0xa7f4872965313256d4b10c1422e50a2a7ff04d19",
+    "transactionId": "26d153ad-2009-4c01-b830-051884d9332f"
+  },
+  "executions": [
+    {
+      "label": "approve",
+      "circleTransactionId": "ab1173b9-7bde-5f8b-92b9-3fe7484d82fb",
+      "circleState": "COMPLETE",
+      "transactionHash": "0x8232e5fbe22fca8140e0e7780546453d5a43a3f6abc2bbf8745020579d9be77b",
+      "receiptStatus": "0x1",
+      "blockNumber": "0x3f6ac7b",
+      "event": {
+        "name": "Executed",
+        "target": "0x3600000000000000000000000000000000000000",
+        "selector": "0x095ea7b3",
+        "navBefore": "200000",
+        "navAfter": "200000"
+      },
+      "forbiddenEvents": []
+    },
+    {
+      "label": "deposit",
+      "circleTransactionId": "417241a4-ce56-5d05-98ae-9a5e3de594b9",
+      "circleState": "COMPLETE",
+      "transactionHash": "0x12cf007c36af7209295c64252c0f825f58177f1cca913860211a0a9e7d80c2fd",
+      "receiptStatus": "0x1",
+      "blockNumber": "0x3f6ac85",
+      "event": {
+        "name": "Executed",
+        "target": "0x5E55202Db7b94BE3193EC8fF2f19afac27258266",
+        "selector": "0x6e553f65",
+        "navBefore": "200000",
+        "navAfter": "200000"
+      },
+      "forbiddenEvents": []
+    }
+  ],
+  "finalState": {
+    "nav": "200000",
+    "idle": "50000",
+    "deployed": "150000"
+  }
+}

@@ -78,6 +78,12 @@ Spending limits answer *"how much can the agent send?"* Mandate answers the ques
 
 Payouts to vendors stay owner-signed: the agent can only move cash between the account and the vault. That separation of duties is the point.
 
+### Optional Aomi × Circle execution path
+
+On Arc Testnet, the same deterministic policy can use a Circle Agent Wallet through Aomi's signature-only Task API. Mandate still chooses `planCalls`; the integration wraps them as exact ordered `MandateAccount.execute(target,data)` calls, asks Circle to sign the EIP-712 Task request, buys Aomi's simulated immutable artifact with a separate Gateway signature, and refuses to execute unless every returned byte equals the signed plan. Circle then signs the final calls. Completion requires Circle's transaction ID, a successful Arc receipt, the exact Mandate account/target/selector, one `Executed` event, and no `Breach` or `CallReverted` event.
+
+Set `AOMI_TASK_ENDPOINT` plus the Circle wallet, trusted Aomi seller/JWKS, and switch `CHAIN_ID`/`ARC_RPC_URL` to Arc Testnet as documented in [`agent/.env.example`](agent/.env.example). Mainnet remains on Mandate's existing direct path until the Testnet acceptance record is complete.
+
 Deploy (local key or Circle Agent Wallet): [`docs/DEPLOY.md`](docs/DEPLOY.md). Dashboard: [`app/index.html`](app/index.html), one static file.
 
 ### Aomi interface

@@ -42,9 +42,12 @@ export function config() {
       const [address, ...name] = x.split(":");
       return { address: address.toLowerCase(), name: name.join(":") || address.slice(0, 10) };
     });
+  const aomiEnabled = Boolean(e.AOMI_TASK_ENDPOINT);
+  const chainId = num(e.CHAIN_ID, 5042);
+  if (aomiEnabled && chainId !== 5042002) throw new Error("Aomi Execution Kit is Arc Testnet-only");
   return {
     rpcUrl: req("ARC_RPC_URL"),
-    chainId: num(e.CHAIN_ID, 5042),
+    chainId,
     factory: req("FACTORY"),
     usdc: e.USDC || "0x3600000000000000000000000000000000000000",
     venues,
@@ -78,6 +81,17 @@ export function config() {
     blockedBackoffMinutes: num(e.BLOCKED_BACKOFF_MINUTES, 60),
     indexFromBlock: BigInt(e.INDEX_FROM_BLOCK || "0"),
     dryRun: /^(1|true|yes)$/i.test(e.DRY_RUN || ""),
+    aomi: {
+      enabled: aomiEnabled,
+      endpoint: e.AOMI_TASK_ENDPOINT || "",
+      walletAddress: aomiEnabled ? req("CIRCLE_WALLET_ADDRESS").toLowerCase() : "",
+      seller: aomiEnabled ? req("AOMI_TASK_SELLER").toLowerCase() : "",
+      trustedJwksFile: aomiEnabled ? path.resolve(AGENT_DIR, expand(req("AOMI_TRUSTED_JWKS_FILE"))) : "",
+      stateDirectory: path.resolve(AGENT_DIR, expand(e.AOMI_STATE_DIR || "./data/aomi")),
+      maxFeeMicrousd: BigInt(e.AOMI_MAX_FEE_MICROUSDC || "1100000"),
+      maxGasUnits: num(e.AOMI_MAX_GAS_UNITS, 1000000),
+      circleCommand: e.CIRCLE_COMMAND || "circle",
+    },
     // Circle Earn Kit: Circle's liquidity, APY and risk warnings per vault (Arc mainnet/testnet only)
     circle: {
       enabled: !/^(0|false|no|off)$/i.test(e.CIRCLE_EARN_KIT || ""),

@@ -13,6 +13,7 @@ import { Indexer } from "./indexer.js";
 import { startServer } from "./server.js";
 import { Bills } from "./bills.js";
 import { CircleVaults } from "./circle.js";
+import { AomiMandateExecutor } from "./aomi.js";
 
 const cfg = config();
 const log = (...a) => console.log(new Date().toISOString(), ...a);
@@ -39,8 +40,9 @@ const readPayables = () => {
   return lastGoodPayables;
 };
 
-const account = await loadAccount(cfg);
-const { pub, wallet } = clients(cfg, account);
+const account = cfg.aomi.enabled ? { address: cfg.aomi.walletAddress } : await loadAccount(cfg);
+const { pub, wallet } = clients(cfg, cfg.aomi.enabled ? null : account);
+const aomi = cfg.aomi.enabled ? new AomiMandateExecutor({ cfg, pub, log }) : null;
 const indexer = new Indexer({ pub, cfg, log });
 const known = (a) => indexer.db.mandates.some((x) => x.toLowerCase() === a.toLowerCase());
 // a bill can only be stored for an account our factory created (re-index once for a brand-new one)
@@ -48,7 +50,7 @@ const circle = new CircleVaults({ cfg, log });
 const bills = new Bills({ cfg, pub, isMandate: async (a) => known(a) || (await indexer.sync().catch(() => {}), known(a)) });
 const status = { agent: account.address, dryRun: cfg.dryRun, lastCycle: null, mandates: {} };
 
-log(`agent ${account.address} | factory ${cfg.factory} | venues ${cfg.venues.map((v) => v.name).join(", ") || "none"} | ${cfg.dryRun ? "DRY RUN" : "LIVE"}`);
+log(`agent ${account.address} | factory ${cfg.factory} | venues ${cfg.venues.map((v) => v.name).join(", ") || "none"} | ${cfg.dryRun ? "DRY RUN" : aomi ? "AOMI + CIRCLE" : "LIVE"}`);
 const once = process.argv.includes("--once");
 if (!once) startServer({ cfg, indexer, bills, circle, getStatus: () => ({ ...status, circle: { enabled: circle.enabled, asOf: circle.at ? new Date(circle.at).toISOString() : null, error: circle.error } }), log }); // a one-shot cycle needs no API
 
@@ -87,7 +89,10 @@ async function cycleMandate(mandate) {
   let execution = null;
   let blockedRepeat = false;
   if (isAction) {
-    execution = await runCalls({ pub, wallet, cfg, snap, calls: planCalls(cfg, snap, chosen), log });
+    const calls = planCalls(cfg, snap, chosen);
+    execution = aomi
+      ? await aomi.run({ snap, calls })
+      : await runCalls({ pub, wallet, cfg, snap, calls, log });
     if (!execution.ok && !cfg.dryRun) {
       const last = execution.results.at(-1);
       blockedRepeat = blk?.kind === chosen.kind && (blk?.status ?? blk?.detail) === last?.status;
@@ -121,7 +126,8 @@ async function cycleMandate(mandate) {
     };
     const { hash, uri } = writeRecord(cfg, record);
     try {
-      await postNote({ pub, wallet, cfg, mandate, tag: chosen.kind, hash, uri, log });
+      if (aomi) log(`  Aomi mode: decision record saved locally at ${uri}; note execution is not part of the verified action artifact`);
+      else await postNote({ pub, wallet, cfg, mandate, tag: chosen.kind, hash, uri, log });
     } catch (e) {
       log(`  note failed: ${e.shortMessage || e.message}`);
     }
@@ -131,7 +137,7 @@ async function cycleMandate(mandate) {
     } else log(`  (dry run) record ${uri}`);
   }
 
-  if (!snap.frozen && now - (state.lastPoke[mandate] || 0) >= cfg.pokeMinutes * 60) {
+  if (!aomi && !snap.frozen && now - (state.lastPoke[mandate] || 0) >= cfg.pokeMinutes * 60) {
     try {
       if (await poke({ pub, wallet, cfg, mandate, log })) state.lastPoke[mandate] = now;
     } catch (e) {

@@ -68,6 +68,25 @@ async function venueReason(pub, mandate, call) {
 
 export const reasonText = (b32) => hexToString(b32, { size: 32 }).replace(/\0+$/, "");
 
+/** Run Mandate's existing execute() simulation without sending a transaction. */
+export async function preflightCall({ pub, account, snap, call, log }) {
+  const base = {
+    address: snap.mandate,
+    abi: MANDATE_ABI,
+    functionName: "execute",
+    args: [call.target, call.data],
+    account,
+  };
+  const sim = await pub.simulateContract(base).catch((e) => ({ error: e.shortMessage || e.message }));
+  if (sim.error || sim.result !== true) {
+    const detail = sim.error || (await venueReason(pub, snap.mandate, call));
+    const result = { ...call, status: "PREFLIGHT_BLOCKED", detail };
+    log(`  ✗ preflight blocked ${call.label}: ${detail}`);
+    return { ok: false, result };
+  }
+  return { ok: true, base };
+}
+
 /**
  * Execute calls one by one. Each call is simulated first (eth_call of execute from the
  * agent address): if the mandate would return false, the transaction is never sent,
@@ -76,14 +95,9 @@ export const reasonText = (b32) => hexToString(b32, { size: 32 }).replace(/\0+$/
 export async function runCalls({ pub, wallet, cfg, snap, calls, log }) {
   const results = [];
   for (const call of calls) {
-    const base = { address: snap.mandate, abi: MANDATE_ABI, functionName: "execute", args: [call.target, call.data], account: wallet.account };
-    const sim = await pub.simulateContract(base).catch((e) => ({ error: e.shortMessage || e.message }));
-    if (sim.error || sim.result !== true) {
-      const detail = sim.error || (await venueReason(pub, snap.mandate, call));
-      results.push({ ...call, status: "PREFLIGHT_BLOCKED", detail });
-      log(`  ✗ preflight blocked ${call.label}: ${detail}`);
-      return { ok: false, results };
-    }
+    const preflight = await preflightCall({ pub, account: wallet.account, snap, call, log });
+    if (!preflight.ok) return { ok: false, results: [...results, preflight.result] };
+    const { base } = preflight;
     if (cfg.dryRun) {
       results.push({ ...call, status: "DRY_RUN" });
       log(`  ○ dry run: ${call.label} would pass preflight`);

@@ -29,6 +29,8 @@ a:hover{text-decoration-color:var(--ink)}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid var(--rule)}
 .brand{font:600 20px/1 var(--serif);letter-spacing:.01em;display:flex;align-items:center;gap:10px}
 .brand svg{flex:none}
+.actions{display:flex;gap:10px;align-items:center}
+a.btn{text-decoration:none}
 button,.btn{font:600 14px/1 var(--sans);color:var(--ink);background:transparent;border:1.5px solid var(--ink);padding:10px 14px;border-radius:3px;cursor:pointer}
 button.primary{background:var(--ink);color:var(--paper)}
 button:disabled{opacity:.45;cursor:not-allowed}
@@ -135,7 +137,10 @@ code{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:br
       <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="13" cy="13" r="4" fill="var(--green)"/></svg>
       Mandate
     </div>
-    <button id="connect">Connect wallet</button>
+    <div class="actions">
+      <a class="btn" href="agent.html">Ask the agent</a>
+      <button id="connect">Connect wallet</button>
+    </div>
   </header>
 
   <div class="hero">

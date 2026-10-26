@@ -106,11 +106,23 @@ curl -s https://mandate.baserep.xyz/api/health
 
 ## 3. Dashboard
 
-Static, one file: `app/index.html`. Deploy the folder to Vercel:
+Two pages in `app/`: the accounts dashboard `index.html` (no bundled code; it imports viem from
+a CDN) and `agent.html`, which embeds the hosted Mandate Treasury Agent through the Aomi widget.
+The widget is a React component, so the folder is a small Vite project and the deploy is a build:
 
 ```bash
-cd /mnt/c/Github/mandate/app && npx vercel deploy --prod
+cd /mnt/c/Github/mandate/app && npm install && npm run build   # writes dist/
+npx vercel deploy --prod                                        # app/vercel.json builds the same way
 ```
 
-It reads Arc directly and falls back to the agent's `/rpc` relay if the browser can't reach
-the RPC. For a local check against anvil: `?rpc=…&chain=31337&factory=…&featured=…&api=…`.
+`app/vercel.json` sets the build command and output directory, so a Vercel project whose root is
+`app/` keeps working; a project that served `app/` as plain static files needs that one setting.
+
+The dashboard reads Arc directly and falls back to the agent's `/rpc` relay if the browser can't
+reach the RPC. For a local check against anvil: `?rpc=…&chain=31337&factory=…&featured=…&api=…`.
+
+The agent page talks to `https://chat.aomi.dev` and pins every turn to the `mandate` App that
+[aomi/mandate-agent/README.md](../aomi/mandate-agent/README.md) deploys. `?app=<Application ID>`
+and `?aomi=<origin>` point it at another release or at staging. It is read-only by construction:
+the App exposes only the five read tools, and the widget's wallet connection is used for identity
+and for whatever the owner chooses to sign in the dashboard, never by the agent.

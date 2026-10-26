@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mandate · ask the treasury agent</title>
+<meta name="description" content="Ask the Mandate treasury agent about any account: its mode and freeze state, its bills, its decisions and the Arc events behind them. It explains and retrieves evidence; it does not move money.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECEFE7; --paper-2:#E2E7DC; --ink:#17233A; --ink-2:#4A5568; --rule:#A3AE9F; --rule-soft:#CBD3C6;
+  --green:#2E6A58; --stamp:#B3261E; --focus:#1F5FBF;
+  --serif:"Spectral",Georgia,serif; --sans:"Public Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111821; --paper-2:#18212C; --ink:#DCE4D8; --ink-2:#9AA6A0; --rule:#3C4A48; --rule-soft:#26312F;
+  --green:#6FB39C; --stamp:#E3776A; --focus:#8AB4FF;
+}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans);display:flex;flex-direction:column}
+a{color:inherit}
+.wrap{width:min(1120px,100% - 32px);margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid var(--rule)}
+.brand{font:600 20px/1 var(--serif);letter-spacing:.01em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{flex:none}
+.back{font:600 14px/1 var(--sans);text-decoration:none;border:1.5px solid var(--ink);padding:10px 14px;border-radius:3px}
+.intro{padding:18px 0 14px;max-width:72ch}
+.intro h1{font:500 26px/1.2 var(--serif);margin:0 0 8px}
+.intro p{margin:0;color:var(--ink-2);font-size:15px}
+#agent-root{flex:1;min-height:560px;margin:0 0 28px;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--paper-2)}
+.setup{padding:28px;font-size:15px;color:var(--ink-2);max-width:72ch}
+.setup code{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="13" cy="13" r="4" fill="var(--green)"/></svg>
+      Mandate
+    </a>
+    <a class="back" href="./">Back to the accounts</a>
+  </header>
+  <div class="intro">
+    <h1>Ask the treasury agent</h1>
+    <p>The agent reads the live Mandate API and the Arc chain: an account's mode and freeze state, its bills, the decisions it recorded and the events that confirm them. It explains and retrieves evidence. It cannot move money; the contract and the owner's wallet keep that.</p>
+  </div>
+  <div id="agent-root"></div>
+</div>
+<script type="module" src="/src/agent.tsx"></script>
+</body>
+</html>
